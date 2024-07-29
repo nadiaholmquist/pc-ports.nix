@@ -1,0 +1,15 @@
+diff --git a/Makefile.port b/Makefile.port
+index 650f02474..e43cbcd1b 100644
+--- a/Makefile.port
++++ b/Makefile.port
+@@ -115,8 +115,8 @@ else
+   $(error ROM version $(VERSION) is not supported)
+ endif
+ 
+-VERSION_HASH := $(shell git rev-parse --short HEAD)
+-VERSION_BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
++#VERSION_HASH := $(shell git rev-parse --short HEAD)
++#VERSION_BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
+ VERSION_TARGET := $(TARGET_PLATFORM)
+ VERSION_ROMID := $(ROMID)
+ 
