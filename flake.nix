@@ -11,7 +11,7 @@
 
   outputs = { self, nixpkgs, systems, systems-linux } @inputs: let
     helpers = import ./helpers.nix { inherit inputs; };
-    inherit (helpers) mkPackages mkApps;
+    inherit (helpers) mkPackages mkApps requireRom;
   in {
     packages = mkPackages [
       {
@@ -29,6 +29,10 @@
           # Zelda 64: Recompiled - Majora's Mask static recompilation
           z64decompress = callPackage ./pkgs/z64decompress {};
           n64recomp = callPackage ./pkgs/n64recomp {};
+
+          # Super Mario 64 PC port
+          copy-rom-hook = callPackage ./pkgs/copy-rom-hook {};
+          sm64ex = callPackage ./pkgs/sm64ex { inherit copy-rom-hook; };
         };
       }
       {
