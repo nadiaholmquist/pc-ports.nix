@@ -32,7 +32,7 @@ in pkgs.stdenv.mkDerivation {
   ];
 
   nativeBuildInputs = (with pkgs; [
-    gnumake42
+    gnumake
     python3
     hexdump
   ])
@@ -51,6 +51,10 @@ in pkgs.stdenv.mkDerivation {
     pkgs.darwin.apple_sdk.frameworks.OpenGL
     pkgs.glew.dev
   ];
+
+  postPatch = ''
+    patchShebangs --build .
+  '';
 
   preConfigure = if isDarwin then ''
     NIX_LDFLAGS="$NIX_LDFLAGS -F${pkgs.darwin.apple_sdk.frameworks.OpenGL}/Library/Frameworks"
