@@ -18,13 +18,8 @@
         systems = import systems;
         packages = { pkgs, ... }:let inherit (pkgs) callPackage; in rec {
           # Xash3D FWGS Engine - Half-Life reimplementation
-          waf-setup-hook = callPackage ./pkgs/waf-setup-hook {};
-          hlsdk-portable = callPackage ./pkgs/hlsdk-portable {
-            inherit waf-setup-hook;
-          };
-          xash3d-fwgs = callPackage ./pkgs/xash3d-fwgs {
-            inherit waf-setup-hook hlsdk-portable;
-          };
+          hlsdk-portable = callPackage ./pkgs/hlsdk-portable {};
+          xash3d-fwgs = callPackage ./pkgs/xash3d-fwgs {};
 
           # Zelda 64: Recompiled - Majora's Mask static recompilation
           z64decompress = callPackage ./pkgs/z64decompress {};

@@ -1,4 +1,4 @@
-{ pkgs, hlsdk-portable, waf-setup-hook, ... }:
+{ pkgs, lib, hlsdk-portable, ... }:
 
 let
   inherit (pkgs) stdenv;
@@ -15,31 +15,44 @@ in stdenv.mkDerivation {
     fetchSubmodules = true;
   };
 
-  nativeBuildInputs = [
-    pkgs.ensureNewerSourcesForZipFilesHook
-    waf-setup-hook
+  nativeBuildInputs = with pkgs; [
+    ensureNewerSourcesForZipFilesHook
+    pkg-config
+    python3
+    wafHook
   ];
 
-  buildInputs = [
+  buildInputs = (with pkgs; [
+    SDL2
+    freetype
+    fontconfig
+  ]) ++ [
     hlsdk-portable
-    pkgs.SDL2
   ];
 
-  wafFlags = ["--64bits" "--enable-packaging"];
+  wafConfigureFlags = ["--64bits" "--enable-packaging" "--prefix=/"];
+  dontUseWafInstall = true;
 
-  fixupPhase = (if stdenv.isDarwin then ''
+  installPhase = ''
+    runHook preInstall
+    python3 waf install --destdir="$out"
+    runHook postInstall
+  '';
+
+  fixupPhase = ''
     runHook preFixup
+  '' + (if stdenv.isDarwin then ''
     install_name_tool "$out/bin/xash3d" \
       -add_rpath "$out/lib/xash3d" \
       -add_rpath "${hlsdk-portable}/valve"
   '' else ''
-    patchelf \
-      --add-rpath "$out/lib/xash3d:${hlsdk-portable}/valve/dlls:${hlsdk-portable}/valve/cl_dlls" \
-      "$out/bin/xash3d"
+    patchelf --add-rpath "$out/lib/xash3d" "$out/bin/xash3d"
+    ln -s "${hlsdk-portable}/valve/dlls" "$out/share/xash3d/valve/dlls"
+    ln -s "${hlsdk-portable}/valve/cl_dlls" "$out/share/xash3d/valve/cl_dlls"
   '') + ''
     mv "$out/bin/xash3d" "$out/bin/.xash3d-wrapped"
     sed "s|\$out|$out|g" > "$out/bin/xash3d" <<'EOF'
-    #!/usr/bin/env bash
+    #! ${lib.getExe pkgs.bash}
     mkdir -p "$HOME/.local/share/xash3d"
     export XASH3D_BASEDIR="''${XASH3D_BASEDIR:-$HOME/.local/share/xash3d}"
     export XASH3D_GAME="''${XASH3D_GAME:-valve}"
@@ -53,6 +66,5 @@ in stdenv.mkDerivation {
     description = "Xash3D FWGS engine.";
     mainProgram = "xash3d";
   };
-
   passthru.exeName = "xash3d";
 }
