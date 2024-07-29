@@ -66,6 +66,8 @@ in pkgs.stdenv.mkDerivation {
     runHook postConfigure
   '';
 
+  enableParallelBuilding = true;
+
   installPhase = ''
     runHook preInstall
     install -Dm755 build/us_pc/sm64.us.f3dex2e "$out/bin/sm64ex"
