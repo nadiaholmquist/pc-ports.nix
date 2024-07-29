@@ -31,7 +31,7 @@ in pkgs.pkgsi686Linux.stdenv.mkDerivation {
 	];
 
 	enableParallelBuilding = true;
-	env.NIX_CFLAGS_COMPILE = "-Wno-error=format-security";
+	hardeningDisable = [ "format" ];
 	postPatch = ''
 		patchShebangs --build .
 	'';
