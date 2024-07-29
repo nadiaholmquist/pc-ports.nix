@@ -2,16 +2,16 @@
 
 let
   inherit (pkgs) stdenv;
-  gitRev = "e70f9a67b85ef3184f058cd10480d32ef68d14eb";
+  gitRev = "dd570b616b3c005b0e78657c1b658612a4463e7f";
 in stdenv.mkDerivation {
   pname = "xash3d-fwgs";
-  version = "unstable-2024-07-26";
+  version = "unstable-2024-07-29";
 
   src = pkgs.fetchFromGitHub {
     owner = "FWGS";
     repo = "xash3d-fwgs";
     rev = gitRev;
-    hash = "sha256-bH2OBnDOztvmfd+UJYeNr2uz1v+xQXGREYmWFRdpC2c";
+    hash = "sha256-y6yhAOm4OKoneW2pE8hQ0JMYgksYcczsJ6JvCyZj6l0=";
     fetchSubmodules = true;
   };
 

@@ -1,7 +1,7 @@
 { pkgs, lib, z64decompress, n64recomp, ... }:
 
 let
-  versionNumber = "1.1.1-unstable-2024-07-26";
+  versionNumber = "1.1.1-unstable-2024-07-29";
 in pkgs.clangStdenv.mkDerivation {
   pname = "zelda64recompiled";
   version = "${versionNumber}";
@@ -9,8 +9,8 @@ in pkgs.clangStdenv.mkDerivation {
     (pkgs.fetchFromGitHub {
       owner = "Zelda64Recomp";
       repo = "Zelda64Recomp";
-      rev = "5aa650bffa061b118426b70e68d6000fbd8a926d";
-      hash = "sha256-5Km5yteCzs42Sdqdx6W8/KdOpBS06HPzMWCiGTECJjQ=";
+      rev = "334640077512b55bdb5dbb2d50ec9ca5403cf240";
+      hash = "sha256-cvju+pZZVWWAgoEvgBTHzy1XXWa1780fk7gQfDKUXgc=";
       fetchSubmodules = true;
     })
     (pkgs.requireFile {
@@ -25,7 +25,6 @@ in pkgs.clangStdenv.mkDerivation {
 
   patches = [
     ./patches/use-packaged-dxc.patch
-    ./patches/rt64-build-fix.patch
   ];
 
   nativeBuildInputs = [
