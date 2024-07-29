@@ -19,7 +19,9 @@
         packages = { pkgs, ... }:let inherit (pkgs) callPackage; in rec {
           # Xash3D FWGS Engine - Half-Life reimplementation
           hlsdk-portable = callPackage ./pkgs/hlsdk-portable {};
-          xash3d-fwgs = callPackage ./pkgs/xash3d-fwgs {};
+          xash3d-fwgs = callPackage ./pkgs/xash3d-fwgs {
+            inherit hlsdk-portable;
+          };
 
           # Zelda 64: Recompiled - Majora's Mask static recompilation
           z64decompress = callPackage ./pkgs/z64decompress {};
