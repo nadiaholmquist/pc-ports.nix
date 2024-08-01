@@ -12,7 +12,7 @@
   };
 
   outputs = { self, systems, systems-linux, systems-x86_64-linux, ... } @inputs: let
-    helpers = import ./helpers.nix { inherit inputs; };
+    helpers = import ./lib/helpers.nix { inherit inputs; };
     inherit (helpers) mkPackages mkApps;
   in {
     packages = mkPackages [
@@ -29,9 +29,15 @@
           z64decompress = callPackage ./pkgs/z64decompress {};
           n64recomp = callPackage ./pkgs/n64recomp {};
 
-          # Super Mario 64 PC port
           copy-rom-hook = callPackage ./pkgs/copy-rom-hook {};
+
+          # Super Mario 64 PC port
           sm64ex = callPackage ./pkgs/sm64ex { inherit copy-rom-hook; };
+
+          # Zelda 3
+          zelda3 = callPackage ./pkgs/snesrev/zelda3.nix {};
+          smw = callPackage ./pkgs/snesrev/smw.nix {};
+          sm = callPackage ./pkgs/snesrev/sm.nix {};
         };
       }
       {

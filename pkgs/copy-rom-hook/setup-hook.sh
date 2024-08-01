@@ -1,9 +1,11 @@
 function _copyROM() {
-  if [[ "$curSrc" =~ \.z64 ]]; then
-    cp "$curSrc" rom.z64
-  else
-    return false
-  fi
+  local fname="$(basename -- "$curSrc")"
+  local ext="${fname##*.}"
+
+  case "$ext" in
+    sfc | z64) cp "$curSrc" rom."$ext" ;;
+    *) return false
+  esac
 }
 
 unpackCmdHooks+=(_copyROM)
