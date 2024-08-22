@@ -18,7 +18,7 @@
     packages = mkPackages [
       {
         systems = import systems;
-        packages = { pkgs, ... }:let inherit (pkgs) callPackage; in rec {
+        packages = { pkgs, ... }: let inherit (pkgs) callPackage; in rec {
           # Xash3D FWGS Engine - Half-Life reimplementation
           hlsdk-portable = callPackage ./pkgs/hlsdk-portable {};
           xash3d-fwgs = callPackage ./pkgs/xash3d-fwgs {
@@ -29,10 +29,11 @@
           z64decompress = callPackage ./pkgs/z64decompress {};
           n64recomp = callPackage ./pkgs/n64recomp {};
 
-          copy-rom-hook = callPackage ./pkgs/copy-rom-hook {};
-
           # Super Mario 64 PC port
-          sm64ex = callPackage ./pkgs/sm64ex { inherit copy-rom-hook; };
+          sm64ex = sm64ex-us;
+          sm64ex-us = callPackage ./pkgs/sm64ex { baseRom = "us"; };
+          sm64ex-eu = callPackage ./pkgs/sm64ex { baseRom = "eu"; };
+          sm64ex-jp = callPackage ./pkgs/sm64ex { baseRom = "jp"; };
 
           # Zelda 3
           zelda3 = callPackage ./pkgs/snesrev/zelda3.nix {};

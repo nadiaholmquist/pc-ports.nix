@@ -1,4 +1,4 @@
-{ pkgs, lib, copy-rom-hook, ... }:
+{ pkgs, lib, baseRom, ... }:
 
 # TODO: Support other versions than US
 # Maybe also toggling the 60FPS patch?
@@ -6,8 +6,28 @@
 let
   inherit (lib) optional;
   inherit (pkgs.stdenv) isDarwin;
+
+  rom = {
+    us = {
+      name = "USA";
+      hash = "sha256-F84Hc0PGEz+Mny1tbZpKtiyM0qpXxArqH0kLTIuyHZE=";
+    };
+    eu = {
+      name = "Europe";
+      hash = "sha256-x5Ll68ujTI2YwMRM8pdHyO5n57kH/Md4h/n/JSP4BXI=";
+    };
+    jp = {
+      name = "Japan";
+      hash = "sha256-nPeoDbMhsHqNRh/lNsAsh7dBJDOVOJHN7JGRv60tsxc=";
+    };
+    # Does not compile - probably upstream issue.
+    #sh = {
+    #  name = "Japan (Shindou Edition)";
+    #  hash = "sha256-+IB7XijxsaMcXTZ10j7Oc/lJzLVT3LsHlyZmoedq36I=";
+    #};
+  }."${baseRom}";
 in pkgs.stdenv.mkDerivation {
-  pname = "sm64ex";
+  pname = "sm64ex-${baseRom}";
   version = "nightly-2024-07-03";
 
   srcs = [
@@ -18,11 +38,11 @@ in pkgs.stdenv.mkDerivation {
       hash = "sha256-nw+F0upTetLqib5r5QxmcOauSJccpTydV3soXz9CHLQ";
     })
     (pkgs.requireFile {
-      name = "sm64.us.z64";
+      name = "sm64.${baseRom}.z64";
       message = ''
-        A Super Mario 64 ROM is required to build this package."
+        A Super Mario 64 ${rom.name} ROM is required to build this package."
       '';
-      sha256 = "17ce077343c6133f8c9f2d6d6d9a4ab62c8cd2aa57c40aea1f490b4c8bb21d91";
+      hash = rom.hash;
     })
   ];
 
@@ -42,7 +62,9 @@ in pkgs.stdenv.mkDerivation {
     # For `as`
     # Target architecture doesn't matter.
     gcc-arm-embedded
-  ]) ++ [copy-rom-hook];
+  ]) ++ [
+    (pkgs.callPackage ../copy-rom-hook {})
+  ];
 
   buildInputs = (with pkgs; [
     libGL
@@ -52,25 +74,24 @@ in pkgs.stdenv.mkDerivation {
     pkgs.glew.dev
   ];
 
+  enableParallelBuilding = true;
+  makeFlags = [ "VERSION=${baseRom}" ];
+
+  postUnpack = ''
+    mv rom.z64 source/baserom.${baseRom}.z64
+  '';
+
   postPatch = ''
     patchShebangs --build .
   '';
 
-  preConfigure = if isDarwin then ''
+  preConfigure = lib.optionalString pkgs.stdenv.isDarwin ''
     NIX_LDFLAGS="$NIX_LDFLAGS -F${pkgs.darwin.apple_sdk.frameworks.OpenGL}/Library/Frameworks"
-  '' else "";
-
-  configurePhase = ''
-    runHook preConfigure
-    mv ../rom.z64 baserom.us.z64
-    runHook postConfigure
   '';
-
-  enableParallelBuilding = true;
 
   installPhase = ''
     runHook preInstall
-    install -Dm755 build/us_pc/sm64.us.f3dex2e "$out/bin/sm64ex"
+    install -Dm755 build/${baseRom}_pc/sm64.${baseRom}.f3dex2e "$out/bin/sm64ex"
     runHook postInstall
   '';
 
