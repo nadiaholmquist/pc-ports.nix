@@ -1,7 +1,7 @@
 { pkgs, lib, z64decompress, n64recomp, ... }:
 
 let
-  versionNumber = "1.1.1-unstable-2024-07-29";
+  versionNumber = "1.1.1-unstable-2024-08-22";
 in pkgs.clangStdenv.mkDerivation {
   pname = "zelda64recompiled";
   version = "${versionNumber}";
@@ -9,8 +9,8 @@ in pkgs.clangStdenv.mkDerivation {
     (pkgs.fetchFromGitHub {
       owner = "Zelda64Recomp";
       repo = "Zelda64Recomp";
-      rev = "334640077512b55bdb5dbb2d50ec9ca5403cf240";
-      hash = "sha256-cvju+pZZVWWAgoEvgBTHzy1XXWa1780fk7gQfDKUXgc=";
+      rev = "af1404b83d19decbc73364dac233a0ace758e0ca";
+      hash = "sha256-E5PdlUjDxviZPPmbl6+lzoT9PvUO2l9qJI4Hj0ePzpg";
       fetchSubmodules = true;
     })
     (pkgs.requireFile {

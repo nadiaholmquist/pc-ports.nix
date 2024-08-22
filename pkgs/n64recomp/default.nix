@@ -6,8 +6,8 @@ pkgs.stdenv.mkDerivation {
   src = pkgs.fetchFromGitHub {
     owner = "N64Recomp";
     repo = "N64Recomp";
-    rev = "ba4aede49c9a5302ecfc1fa599f7acc3925042f9";
-    hash = "sha256-9C5mbDlj2gh2hFKm7+UoFLlkzoEzTf6wk5rizzwOUzc=";
+    rev = "f8d439aeee6048b7365d1cb3bcd2578ec27a0288";
+    hash = "sha256-QiEDSRI9+pRiBA/mx1NTA7uHD6KAEZDP7SaV+FaKsoc";
     fetchSubmodules = true;
   };
   nativeBuildInputs = with pkgs; [ cmake ];
