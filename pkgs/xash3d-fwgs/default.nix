@@ -1,17 +1,14 @@
 { pkgs, lib, hlsdk-portable, ... }:
 
-let
-  inherit (pkgs) stdenv;
-  gitRev = "dd570b616b3c005b0e78657c1b658612a4463e7f";
-in stdenv.mkDerivation {
+pkgs.stdenv.mkDerivation {
   pname = "xash3d-fwgs";
   version = "unstable-2024-07-29";
 
   src = pkgs.fetchFromGitHub {
     owner = "FWGS";
     repo = "xash3d-fwgs";
-    rev = gitRev;
-    hash = "sha256-y6yhAOm4OKoneW2pE8hQ0JMYgksYcczsJ6JvCyZj6l0=";
+    rev = "cd86f802035ef4678c4c7259fcf3a7175daf1642";
+    hash = "sha256-iJFdizQJsLuleZB34zMuEttyqKlw8d+3pU26++b3VCA";
     fetchSubmodules = true;
   };
 
@@ -30,18 +27,20 @@ in stdenv.mkDerivation {
     hlsdk-portable
   ];
 
-  wafConfigureFlags = ["--64bits" "--enable-packaging" "--prefix=/"];
-  dontUseWafInstall = true;
-
-  installPhase = ''
-    runHook preInstall
-    python3 waf install --destdir="$out"
-    runHook postInstall
+  # HACK: Remove macOS-specific handling of SDL2 in waf
+  # It expects a SDL2.framework, but what Nix provides is a Linux-like file structure instead.
+  postPatch = lib.optionalString pkgs.stdenv.isDarwin ''
+    python3 ./waf --version # make waf extract itself
+    substituteInPlace .waf3-2.1.2-89fbd1aed01504e28af54a092e4144fb/waflib/extras/sdl2.py \
+      --replace-fail darwin darwin_
   '';
+
+  wafConfigureFlags = ["--64bits" "--enable-packaging" "--prefix=/" ];
+  wafInstallFlags = [ "--destdir=${placeholder "out"}" ];
 
   fixupPhase = ''
     runHook preFixup
-  '' + (if stdenv.isDarwin then ''
+  '' + (if pkgs.stdenv.isDarwin then ''
     install_name_tool "$out/bin/xash3d" \
       -add_rpath "$out/lib/xash3d" \
       -add_rpath "${hlsdk-portable}/valve"

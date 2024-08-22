@@ -1,16 +1,14 @@
 { pkgs, ... }:
 
-let
-  gitRev = "ce1c96c4b2ac885997fd8f0e5ed6d58b9e90c89c";
-in pkgs.stdenv.mkDerivation {
+pkgs.stdenv.mkDerivation {
   pname = "hlsdk-portable";
   version = "unstable-2024-07-26";
 
   src = pkgs.fetchFromGitHub {
     owner = "FWGS";
     repo = "hlsdk-portable";
-    rev = gitRev;
-    hash = "sha256-ZrZVlzIythYQWGTE96VqBeLGdo4JIQ9+ADvpZgTIGFU";
+    rev = "f1c430ae1d33b946bb86101b806d927d9cf728ad";
+    hash = "sha256-Hy2ZdPuTEmBYuhobyluLS/KZx0YFCISY4gQEAroEDmQ";
   };
 
   nativeBuildInputs = with pkgs; [
@@ -19,8 +17,5 @@ in pkgs.stdenv.mkDerivation {
   ];
 
   wafConfigureFlags = ["--64bits" "--prefix=/"];
-  dontUseWafInstall = true;
-  installPhase = ''
-    python3 waf install --destdir="$out"
-  '';
+  wafInstallFlags = "--destdir=${placeholder "out"}";
 }
