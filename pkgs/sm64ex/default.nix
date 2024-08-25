@@ -1,11 +1,14 @@
-{ pkgs, lib, baseRom, ... }:
-
-# TODO: Support other versions than US
-# Maybe also toggling the 60FPS patch?
+{
+  pkgs,
+  lib,
+  baseRom ? "us",
+  enable60fps ? true,
+  ...
+}:
 
 let
-  inherit (lib) optional;
-  inherit (pkgs.stdenv) isDarwin;
+  inherit (lib) optional optionalString;
+  inherit (pkgs.gccStdenv) isDarwin;
 
   rom = {
     us = {
@@ -26,7 +29,7 @@ let
     #  hash = "sha256-+IB7XijxsaMcXTZ10j7Oc/lJzLVT3LsHlyZmoedq36I=";
     #};
   }."${baseRom}";
-in pkgs.stdenv.mkDerivation {
+in pkgs.gccStdenv.mkDerivation {
   pname = "sm64ex-${baseRom}";
   version = "nightly-2024-07-03";
 
@@ -46,32 +49,29 @@ in pkgs.stdenv.mkDerivation {
     })
   ];
 
-  patches = [
-    ./patches/detect-nix.patch
-    "enhancements/60fps_ex.patch"
-  ];
-
-  nativeBuildInputs = (with pkgs; [
+  nativeBuildInputs = [
+    (pkgs.callPackage ../copy-rom-hook {})
+  ] ++ (with pkgs; [
     gnumake
     python3
     hexdump
-  ])
-  ++ optional isDarwin (with pkgs; [
-    gcc
+  ]) ++ optional isDarwin (with pkgs; [
     pkg-config
-    # For `as`
-    # Target architecture doesn't matter.
-    gcc-arm-embedded
-  ]) ++ [
-    (pkgs.callPackage ../copy-rom-hook {})
-  ];
+    djgpp
+  ]);
 
   buildInputs = (with pkgs; [
     libGL
     SDL2
-  ]) ++ optional isDarwin [
-    pkgs.darwin.apple_sdk.frameworks.OpenGL
-    pkgs.glew.dev
+  ]) ++ optional isDarwin (with pkgs; [
+    darwin.apple_sdk.frameworks.OpenGL
+    glew.dev
+  ]);
+
+  patches = optional enable60fps [
+    "enhancements/60fps_ex.patch"
+  ] ++ optional isDarwin [
+    ./patches/macos-hacks.patch
   ];
 
   enableParallelBuilding = true;
@@ -79,13 +79,10 @@ in pkgs.stdenv.mkDerivation {
 
   postUnpack = ''
     mv rom.z64 source/baserom.${baseRom}.z64
+    patchShebangs --build source
   '';
 
-  postPatch = ''
-    patchShebangs --build .
-  '';
-
-  preConfigure = lib.optionalString pkgs.stdenv.isDarwin ''
+  preBuild = optionalString pkgs.stdenv.isDarwin ''
     NIX_LDFLAGS="$NIX_LDFLAGS -F${pkgs.darwin.apple_sdk.frameworks.OpenGL}/Library/Frameworks"
   '';
 
