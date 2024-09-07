@@ -65,5 +65,4 @@ pkgs.stdenv.mkDerivation {
     description = "Xash3D FWGS engine.";
     mainProgram = "xash3d";
   };
-  passthru.exeName = "xash3d";
 }

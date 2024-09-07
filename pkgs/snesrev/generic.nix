@@ -15,35 +15,36 @@
 let
   rom = pkgs.requireFile {
     name = "${pname}.sfc";
-    message = "todo";
+    message = ''
+      The ROM "${pname}.sfc" is required to build this package.
+      You can add it to your Nix store with:
+       $ nix-store --add-fixed sha256 zelda3.sfc
+    '';
     hash = romHash;
   };
-  copy-rom-hook = callPackage ../copy-rom-hook {};
   linkAssets = if linkRom then
     "ln -sf ${rom} \"$conf/${linkRomName}\""
   else
     "ln -sf OUT/share/${pname}/${pname}_assets.dat \"$conf/\"";
+
 in pkgs.stdenv.mkDerivation rec {
   inherit pname version;
 
-  srcs = [
-    (pkgs.fetchFromGitHub {
-      owner = "snesrev";
-      repo = pname;
-      rev = gitRev;
-      hash = gitHash;
-    })
-    rom
-  ];
+  src = (pkgs.fetchFromGitHub {
+    owner = "snesrev";
+    repo = pname;
+    rev = gitRev;
+    hash = gitHash;
+  });
 
   enableParallelBuilding = true;
 
-  nativeBuildInputs = (with pkgs; [
+  nativeBuildInputs = with pkgs; [
     (python3.withPackages (py: [
       py.pyyaml
       py.pillow
     ]))
-  ]) ++ [copy-rom-hook];
+  ];
 
   buildInputs = with pkgs; [
     SDL2
@@ -51,9 +52,14 @@ in pkgs.stdenv.mkDerivation rec {
 
   env.NIX_CFLAGS_COMPILE = cflags;
 
+  prePatch = ''
+    substituteInPlace Makefile \
+      --replace-quiet "/usr/bin/env " ""
+  '';
+
   preBuild = ''
     patchShebangs --build .
-    mv ../rom.sfc ${pname}.sfc
+    ln -s ${rom} ${pname}.sfc
   '';
 
   installPhase = ''
@@ -80,6 +86,4 @@ in pkgs.stdenv.mkDerivation rec {
     description = "PC reimplementation of ${gameName}";
     mainProgram = binName;
   };
-
-  passthru.exeName = binName;
 }

@@ -10,7 +10,7 @@ let
   inherit (lib) optional optionalString;
   inherit (pkgs.gccStdenv) isDarwin;
 
-  rom = {
+  romFile = {
     us = {
       name = "USA";
       hash = "sha256-F84Hc0PGEz+Mny1tbZpKtiyM0qpXxArqH0kLTIuyHZE=";
@@ -29,33 +29,32 @@ let
     #  hash = "sha256-+IB7XijxsaMcXTZ10j7Oc/lJzLVT3LsHlyZmoedq36I=";
     #};
   }."${baseRom}";
+
+  rom = pkgs.requireFile rec {
+    name = "sm64.${baseRom}.z64";
+    message = ''
+      A Super Mario 64 ${romFile.name} ROM is required to build this package."
+      You can add it to the Nix store with:
+       $ nix-store --add-fixed sha256 ${name}
+    '';
+    hash = romFile.hash;
+  };
 in pkgs.gccStdenv.mkDerivation {
   pname = "sm64ex-${baseRom}";
   version = "nightly-2024-07-03";
 
-  srcs = [
-    (pkgs.fetchFromGitHub {
-      owner = "sm64pc";
-      repo = "sm64ex";
-      rev = "20bb444562aa1dba79cf6adcb5da632ba580eec3";
-      hash = "sha256-nw+F0upTetLqib5r5QxmcOauSJccpTydV3soXz9CHLQ";
-    })
-    (pkgs.requireFile {
-      name = "sm64.${baseRom}.z64";
-      message = ''
-        A Super Mario 64 ${rom.name} ROM is required to build this package."
-      '';
-      hash = rom.hash;
-    })
-  ];
+  src = pkgs.fetchFromGitHub {
+    owner = "sm64pc";
+    repo = "sm64ex";
+    rev = "20bb444562aa1dba79cf6adcb5da632ba580eec3";
+    hash = "sha256-nw+F0upTetLqib5r5QxmcOauSJccpTydV3soXz9CHLQ";
+  };
 
-  nativeBuildInputs = [
-    (pkgs.callPackage ../copy-rom-hook {})
-  ] ++ (with pkgs; [
+  nativeBuildInputs = with pkgs; [
     gnumake
     python3
     hexdump
-  ]) ++ optional isDarwin (with pkgs; [
+  ] ++ optional isDarwin (with pkgs; [
     pkg-config
     djgpp
   ]);
@@ -77,9 +76,9 @@ in pkgs.gccStdenv.mkDerivation {
   enableParallelBuilding = true;
   makeFlags = [ "VERSION=${baseRom}" ];
 
-  postUnpack = ''
-    mv rom.z64 source/baserom.${baseRom}.z64
-    patchShebangs --build source
+  prePatch = ''
+    patchShebangs --build .
+    ln -s ${rom} baserom.${baseRom}.z64
   '';
 
   preBuild = optionalString pkgs.stdenv.isDarwin ''
@@ -92,6 +91,8 @@ in pkgs.gccStdenv.mkDerivation {
     runHook postInstall
   '';
 
-  meta.description = "Super Mario 64 PC port.";
-  passthru.exeName = "sm64ex";
+  meta = {
+    description = "Super Mario 64 PC port.";
+    mainProgram = "sm64ex";
+  };
 }

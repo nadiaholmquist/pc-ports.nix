@@ -16,10 +16,10 @@ in {
 
   mkApps = packages: genAttrs allSystems (system: let
     appPkgs = filterAttrs
-      (_: pkg: pkg?passthru && pkg.passthru?exeName )
+      (_: pkg: pkg?meta && pkg.passthru?mainProgram )
       packages."${system}";
   in (mapAttrs (_: pkg:
-      { type = "app"; program = "${pkg}/bin/${pkg.passthru.exeName}"; }
+      { type = "app"; program = "${pkg}/bin/${pkg.meta.mainProgram}"; }
     ) appPkgs
   ));
 }

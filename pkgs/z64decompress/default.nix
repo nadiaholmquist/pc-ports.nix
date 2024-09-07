@@ -1,10 +1,8 @@
 { pkgs, ... }:
 
-let
-  version = "1.0.3-unstable-2023-12-21";
-in pkgs.stdenv.mkDerivation {
+pkgs.stdenv.mkDerivation {
   pname = "z64decompress";
-  version = version;
+  version = "1.0.3-unstable-2023-12-21";
   src = pkgs.fetchFromGitHub {
     owner = "z64utils";
     repo = "z64decompress";
@@ -18,6 +16,4 @@ in pkgs.stdenv.mkDerivation {
   installPhase = ''
     install -Dm755 z64decompress $out/bin/z64decompress
   '';
-
-  setupHook = ./setup-hook.sh;
 }

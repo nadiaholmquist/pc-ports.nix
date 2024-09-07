@@ -1,36 +1,35 @@
 { pkgs, lib, z64decompress, n64recomp, ... }:
 
 let
-  versionNumber = "1.1.1-unstable-2024-08-22";
+  rom = pkgs.requireFile {
+    name = "mm.us.rev1.z64";
+    message = ''
+      A Majora's Mask US ROM is required to build. Dump your ROM and run the following to add it to the Nix store:
+      $ nix-store --add-fixed sha256 mm.us.rev1.z64
+    '';
+    sha256 = "efb1365b3ae362604514c0f9a1a2d11f5dc8688ba5be660a37debf5e3be43f2b";
+  };
+
+  decompressedRom = pkgs.runCommandNoCC "rom-uncompressed"
+    { nativeBuildInputs = [z64decompress]; }
+    "z64decompress ${rom} $out";
+
 in pkgs.clangStdenv.mkDerivation {
   pname = "zelda64recompiled";
-  version = "${versionNumber}";
-  srcs = [
-    (pkgs.fetchFromGitHub {
-      owner = "Zelda64Recomp";
-      repo = "Zelda64Recomp";
-      rev = "af1404b83d19decbc73364dac233a0ace758e0ca";
-      hash = "sha256-E5PdlUjDxviZPPmbl6+lzoT9PvUO2l9qJI4Hj0ePzpg";
-      fetchSubmodules = true;
-    })
-    (pkgs.requireFile {
-      name = "mm.us.rev1.z64";
-      message = ''
-        A Majora's Mask US ROM is required to build. Dump your ROM and run the following to add it to the Nix store:
-        $ nix-store --add-fixed sha256 mm.us.rev1.z64
-      '';
-      sha256 = "efb1365b3ae362604514c0f9a1a2d11f5dc8688ba5be660a37debf5e3be43f2b";
-    })
-  ];
+  version = "1.1.1-unstable-2024-08-22";
+  src = pkgs.fetchFromGitHub {
+    owner = "Zelda64Recomp";
+    repo = "Zelda64Recomp";
+    rev = "af1404b83d19decbc73364dac233a0ace758e0ca";
+    hash = "sha256-E5PdlUjDxviZPPmbl6+lzoT9PvUO2l9qJI4Hj0ePzpg";
+    fetchSubmodules = true;
+  };
 
   patches = [
     ./patches/use-packaged-dxc.patch
   ];
 
-  nativeBuildInputs = [
-    z64decompress
-    n64recomp
-  ] ++ (with pkgs; [
+  nativeBuildInputs = with pkgs; [
     makeWrapper
     lld
     cmake
@@ -38,7 +37,7 @@ in pkgs.clangStdenv.mkDerivation {
     pkg-config
     directx-shader-compiler
     wrapGAppsHook3
-  ]);
+  ];
 
   buildInputs = with pkgs; [
     gtk3
@@ -52,18 +51,10 @@ in pkgs.clangStdenv.mkDerivation {
     platforms = lib.platforms.linux;
   };
 
-  passthru = {
-    updateScript = pkgs.unstableGitUpdater { };
-    exeName = "Zelda64Recompiled";
-  };
-
-  # Project recommends this, it's also noticeably faster
-  cmakeFlags = [ "-GNinja" ];
-
   preConfigure = ''
     ln -s "${n64recomp}/bin/N64Recomp" .
     ln -s "${n64recomp}/bin/RSPRecomp" .
-    ln -s ../mm.us.rev1.rom_uncompressed.z64 .
+    ln -s ${decompressedRom} mm.us.rev1.rom_uncompressed.z64
     ./N64Recomp us.rev1.toml
     ./RSPRecomp aspMain.us.rev1.toml
     ./RSPRecomp njpgdspMain.us.rev1.toml

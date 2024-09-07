@@ -1,16 +1,13 @@
 { pkgs, ... }:
 
-let
-	gitRev = "b523b1e076158223ff5f07a843522a7898eabb91"; 
-	gitShortRev = builtins.substring 0 8 gitRev;
-in pkgs.pkgsi686Linux.stdenv.mkDerivation {
+pkgs.pkgsi686Linux.stdenv.mkDerivation (finalAttrs: {
 	pname = "perfect-dark";
 	version = "unstable-2024-05-31";
 
 	src = pkgs.fetchFromGitHub {
 		owner = "fgsfdsfgs";
 		repo = "perfect_dark";
-		rev = gitRev;
+		rev = "b523b1e076158223ff5f07a843522a7898eabb91"; 
 		hash = "sha256-GGmmjwIXsxa1yQgXQEQe0C8RWFd5+Jx6BWrXosqIkOQ=";
 	};
 
@@ -39,7 +36,7 @@ in pkgs.pkgsi686Linux.stdenv.mkDerivation {
 	makefile = "Makefile.port";
 	makeFlags = [
 		"GCC_OPT_LVL=-O2"
-		"VERSION_HASH=${gitShortRev}"
+		"VERSION_HASH=${builtins.substring 0 8 finalAttrs.src.rev}"
 		"VERSION_BRANCH=port"
 	];
 
@@ -49,7 +46,8 @@ in pkgs.pkgsi686Linux.stdenv.mkDerivation {
 		runHook postInstall
 	'';
 
-	meta.description = "Perfect Dark PC port.";
-	passthru.exeName = "perfect-dark";
-}
-
+	meta = {
+		description = "Perfect Dark PC port.";
+		mainProgram = "perfect-dark";
+	};
+})
