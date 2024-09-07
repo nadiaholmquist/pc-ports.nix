@@ -1,14 +1,16 @@
 { pkgs, ... }:
 
-pkgs.pkgsi686Linux.stdenv.mkDerivation (finalAttrs: {
+let
+	bundle = "io.github.fgsfdsfgs.perfect_dark";
+in pkgs.pkgsi686Linux.stdenv.mkDerivation (finalAttrs: {
 	pname = "perfect-dark";
-	version = "unstable-2024-05-31";
+	version = "1.0-unstable-2024-09-02";
 
 	src = pkgs.fetchFromGitHub {
 		owner = "fgsfdsfgs";
 		repo = "perfect_dark";
-		rev = "b523b1e076158223ff5f07a843522a7898eabb91"; 
-		hash = "sha256-GGmmjwIXsxa1yQgXQEQe0C8RWFd5+Jx6BWrXosqIkOQ=";
+		rev = "2a5c3a351eeb1772306567969fb8dc5b31eaf34e"; 
+		hash = "sha256-tpAzpIe2NYUtIY3NsvGl9liOuNb4YQCcfs+oLkFpFQA=";
 	};
 
 	patches = [
@@ -31,6 +33,8 @@ pkgs.pkgsi686Linux.stdenv.mkDerivation (finalAttrs: {
 	hardeningDisable = [ "format" ];
 	postPatch = ''
 		patchShebangs --build .
+		substituteInPlace dist/linux/${bundle}.desktop \
+			--replace-fail pd perfect-dark
 	'';
 
 	makefile = "Makefile.port";
@@ -43,11 +47,13 @@ pkgs.pkgsi686Linux.stdenv.mkDerivation (finalAttrs: {
 	installPhase = ''
 		runHook preInstall
 		install -Dm755 build/ntsc-final-port/pd.exe "$out/bin/perfect-dark"
+		install -Dm644 dist/linux/${bundle}.desktop "$out/share/applications/${bundle}.desktop"
+		install -Dm644 dist/linux/${bundle}.png $out/share/icons/hicolor/256x256/apps/${bundle}.png
 		runHook postInstall
 	'';
 
 	meta = {
-		description = "Perfect Dark PC port.";
+		description = "work in progress port of n64decomp/perfect_dark to modern platforms";
 		mainProgram = "perfect-dark";
 	};
 })
