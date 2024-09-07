@@ -16,12 +16,12 @@ let
 
 in pkgs.clangStdenv.mkDerivation {
   pname = "zelda64recompiled";
-  version = "1.1.1-unstable-2024-08-22";
+  version = "1.1.1-unstable-2024-09-06";
   src = pkgs.fetchFromGitHub {
     owner = "Zelda64Recomp";
     repo = "Zelda64Recomp";
-    rev = "af1404b83d19decbc73364dac233a0ace758e0ca";
-    hash = "sha256-E5PdlUjDxviZPPmbl6+lzoT9PvUO2l9qJI4Hj0ePzpg";
+    rev = "d99a84f04f6803a0df49383b6a05f4253a1b7c0a";
+    hash = "sha256-ljieGmQsXaUccjOOaNSdOQi7bM80a27fEbJIuEYGl2U=";
     fetchSubmodules = true;
   };
 
