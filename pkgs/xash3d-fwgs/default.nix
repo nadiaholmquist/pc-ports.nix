@@ -2,13 +2,13 @@
 
 pkgs.stdenv.mkDerivation {
   pname = "xash3d-fwgs";
-  version = "0-unstable-2024-09-05";
+  version = "unstable-2024-10-02";
 
   src = pkgs.fetchFromGitHub {
     owner = "FWGS";
     repo = "xash3d-fwgs";
-    rev = "178602ea1fa85f700a2a5873d983162b42b3e9f4";
-    hash = "sha256-IVLuZFxJJ+hO/XrdBcEuBb6Nj5SeInFQynFOzwfSq3Q=";
+    rev = "67af41cce85d9d7ecdf06558c3e43156a576aca1";
+    hash = "sha256-GzNKU28fOsojc7G7guOPgbLW0+igvyex3R7MIOLqtno=";
     fetchSubmodules = true;
   };
 

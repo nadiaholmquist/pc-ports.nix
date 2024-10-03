@@ -2,13 +2,13 @@
 
 pkgs.stdenv.mkDerivation {
   pname = "hlsdk-portable";
-  version = "0-unstable-2024-08-21";
+  version = "unstable-2024-09-25";
 
   src = pkgs.fetchFromGitHub {
     owner = "FWGS";
     repo = "hlsdk-portable";
-    rev = "f1c430ae1d33b946bb86101b806d927d9cf728ad";
-    hash = "sha256-Hy2ZdPuTEmBYuhobyluLS/KZx0YFCISY4gQEAroEDmQ=";
+    rev = "1a29908ead4d76c57896c53cb1b9376edfdd4347";
+    hash = "sha256-mL/RsKNoMnVv2P2M+JbvT/7F779w5T6MVXYVTTnHmVs=";
   };
 
   nativeBuildInputs = with pkgs; [
