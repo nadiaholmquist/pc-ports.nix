@@ -1,13 +1,15 @@
 { pkgs, lib, z64decompress, n64recomp, ... }:
 
 let
-  rom = pkgs.requireFile {
+  rom = pkgs.requireFile rec {
     name = "mm.us.rev1.z64";
     message = ''
       A Majora's Mask US ROM is required to build. Dump your ROM and run the following to add it to the Nix store:
-      $ nix-store --add-fixed sha256 mm.us.rev1.z64
+       $ nix-store --add-fixed sha256 mm.us.rev1.z64
+      The hash of the required ROM is
+       ${hash}
     '';
-    sha256 = "efb1365b3ae362604514c0f9a1a2d11f5dc8688ba5be660a37debf5e3be43f2b";
+    hash = "sha256-77E2WzrjYmBFFMD5oaLRH13IaIulvmYKN96/XjvkPys=";
   };
 
   decompressedRom = pkgs.runCommandNoCC "rom-uncompressed"

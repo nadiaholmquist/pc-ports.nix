@@ -18,7 +18,9 @@ let
     message = ''
       The ROM "${pname}.sfc" is required to build this package.
       You can add it to your Nix store with:
-       $ nix-store --add-fixed sha256 zelda3.sfc
+       $ nix-store --add-fixed sha256 ${pname}.sfc
+      The hash of the required ROM is:
+       ${romHash}
     '';
     hash = romHash;
   };

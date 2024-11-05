@@ -36,6 +36,8 @@ let
       A Super Mario 64 ${romFile.name} ROM is required to build this package."
       You can add it to the Nix store with:
        $ nix-store --add-fixed sha256 ${name}
+      The hash of the required ROM is:
+       ${romFile.hash}
     '';
     hash = romFile.hash;
   };
