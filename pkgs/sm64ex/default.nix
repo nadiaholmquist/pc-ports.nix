@@ -64,10 +64,7 @@ in pkgs.gccStdenv.mkDerivation {
   buildInputs = (with pkgs; [
     libGL
     SDL2
-  ]) ++ optional isDarwin (with pkgs; [
-    darwin.apple_sdk.frameworks.OpenGL
-    glew.dev
-  ]);
+  ]) ++ optional isDarwin pkgs.glew.dev;
 
   patches = optional enable60fps [
     "enhancements/60fps_ex.patch"
@@ -81,10 +78,6 @@ in pkgs.gccStdenv.mkDerivation {
   prePatch = ''
     patchShebangs --build .
     ln -s ${rom} baserom.${baseRom}.z64
-  '';
-
-  preBuild = optionalString pkgs.stdenv.isDarwin ''
-    NIX_LDFLAGS="$NIX_LDFLAGS -F${pkgs.darwin.apple_sdk.frameworks.OpenGL}/Library/Frameworks"
   '';
 
   installPhase = ''
