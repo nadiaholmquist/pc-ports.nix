@@ -37,28 +37,24 @@ pkgs.stdenv.mkDerivation {
   wafConfigureFlags = ["--64bits" "--enable-packaging" "--prefix=/" ];
   wafInstallFlags = [ "--destdir=${placeholder "out"}" ];
 
-  fixupPhase = ''
-    runHook preFixup
-  '' + (if pkgs.stdenv.isDarwin then ''
-    install_name_tool "$out/bin/xash3d" \
-      -add_rpath "$out/lib/xash3d" \
-      -add_rpath "${hlsdk-portable}/valve"
-  '' else ''
-    patchelf --add-rpath "$out/lib/xash3d" "$out/bin/xash3d"
-    ln -s "${hlsdk-portable}/valve/dlls" "$out/share/xash3d/valve/dlls"
-    ln -s "${hlsdk-portable}/valve/cl_dlls" "$out/share/xash3d/valve/cl_dlls"
-  '') + ''
+  postInstall = ''
     mv "$out/bin/xash3d" "$out/bin/.xash3d-wrapped"
-    sed "s|\$out|$out|g" > "$out/bin/xash3d" <<'EOF'
-    #! ${lib.getExe pkgs.bash}
-    mkdir -p "$HOME/.local/share/xash3d"
-    export XASH3D_BASEDIR="''${XASH3D_BASEDIR:-$HOME/.local/share/xash3d}"
-    export XASH3D_GAME="''${XASH3D_GAME:-valve}"
-    exec "$out/bin/.xash3d-wrapped" -rodir "$out/share/xash3d" "$@"
-    EOF
-    chmod +x "$out/bin/xash3d"
-    runHook postFixup
+    substitute ${./wrapper.sh} $out/bin/xash3d \
+      --subst-var out \
+      --replace-fail /bin/bash ${lib.getExe pkgs.bash}
+    chmod +x $out/bin/xash3d
   '';
+
+  postFixup =
+    if pkgs.stdenv.isDarwin then ''
+      install_name_tool "$out/bin/.xash3d-wrapped" \
+        -add_rpath "$out/lib/xash3d" \
+        -add_rpath "${hlsdk-portable}/valve"
+    '' else ''
+      patchelf --add-rpath "$out/lib/xash3d" "$out/bin/.xash3d-wrapped"
+      ln -s "${hlsdk-portable}/valve/dlls" "$out/share/xash3d/valve/dlls"
+      ln -s "${hlsdk-portable}/valve/cl_dlls" "$out/share/xash3d/valve/cl_dlls"
+    '';
 
   meta = {
     description = "Xash3D FWGS engine.";
