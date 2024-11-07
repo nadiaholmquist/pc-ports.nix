@@ -2,13 +2,13 @@
 
 pkgs.stdenv.mkDerivation {
   pname = "xash3d-fwgs";
-  version = "unstable-2024-10-02";
+  version = "unstable-2024-11-07";
 
   src = pkgs.fetchFromGitHub {
     owner = "FWGS";
     repo = "xash3d-fwgs";
-    rev = "67af41cce85d9d7ecdf06558c3e43156a576aca1";
-    hash = "sha256-GzNKU28fOsojc7G7guOPgbLW0+igvyex3R7MIOLqtno=";
+    rev = "6ae62e3bb1fd29ab5f389a76bd130ef5733282c1";
+    hash = "sha256-ONxuY7X2wkIaNxE2DdhfxdQxcSDaqmdXIhHrVYtslZ0=";
     fetchSubmodules = true;
   };
 
@@ -30,8 +30,7 @@ pkgs.stdenv.mkDerivation {
   # HACK: Remove macOS-specific handling of SDL2 in waf
   # It expects a SDL2.framework, but what Nix provides is a Linux-like file structure instead.
   postPatch = lib.optionalString pkgs.stdenv.isDarwin ''
-    python3 ./waf --version # make waf extract itself
-    substituteInPlace .waf3-2.1.2-89fbd1aed01504e28af54a092e4144fb/waflib/extras/sdl2.py \
+    substituteInPlace scripts/waifulib/sdl2.py \
       --replace-fail darwin darwin_
   '';
 
