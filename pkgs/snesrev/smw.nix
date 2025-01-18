@@ -1,4 +1,4 @@
-{ callPackage }:
+{ stdenv, callPackage }:
 
 callPackage ./generic.nix {
   pname = "smw";
@@ -7,5 +7,8 @@ callPackage ./generic.nix {
   gitRev = "v0.1";
   gitHash = "sha256-n3qkxxwNAKZIiVKs8zIW02O7agbn0DR4P2xBa+Bqfk0";
   romHash = "sha256-CDjlMf4iwHdSj+vhTLP/fEkvH1+o3jVBkr3/cTfCf1s=";
-  cflags = "-Wno-error=tautological-constant-out-of-range-compare";
+  cflags =
+    if stdenv.cc.isClang then
+      "-Wno-error=tautological-constant-out-of-range-compare"
+    else "";
 }
