@@ -69,6 +69,7 @@ in pkgs.stdenv.mkDerivation rec {
     install -Dm755 ${pname} "$out/bin/.${pname}-wrapped"
     install -Dm644 ${pname}.ini -t "$out/share/${pname}"
     sed "s|OUT|$out|g" > "$out/bin/${binName}" <<'EOF'
+    #!${pkgs.runtimeShell}
     conf="$HOME/.config/${pname}"
     mkdir -p "$conf"
     cp -n "OUT/share/${pname}/${pname}.ini" "$conf/"
