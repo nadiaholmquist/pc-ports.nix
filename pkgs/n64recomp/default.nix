@@ -2,12 +2,12 @@
 
 pkgs.stdenv.mkDerivation {
   pname = "n64recomp";
-  version = "0-unstable-2024-08-27";
+  version = "0-unstable-2025-02-27";
   src = pkgs.fetchFromGitHub {
     owner = "N64Recomp";
     repo = "N64Recomp";
-    rev = "5b17bf8bb556d2544c6161487232a455eae8f188";
-    hash = "sha256-4NZzT0Gc/a+thnVljKC7Y+SQPyi4upEiO5qs2wzFYNE=";
+    rev = "989a86b36912403cd323de884bf834f2605ea770";
+    hash = "sha256-DlzqixK8qnKrwN5zAqaae2MoXLqIIIzIkReVSk2dDFg=";
     fetchSubmodules = true;
   };
   nativeBuildInputs = with pkgs; [ cmake ];

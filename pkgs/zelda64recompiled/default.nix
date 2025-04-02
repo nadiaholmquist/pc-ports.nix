@@ -18,18 +18,22 @@ let
 
 in pkgs.clangStdenv.mkDerivation {
   pname = "zelda64recompiled";
-  version = "1.1.1-unstable-2024-09-06";
+  version = "1.1.1-unstable-2025-03-25";
+
   src = pkgs.fetchFromGitHub {
     owner = "Zelda64Recomp";
     repo = "Zelda64Recomp";
-    rev = "d99a84f04f6803a0df49383b6a05f4253a1b7c0a";
-    hash = "sha256-ljieGmQsXaUccjOOaNSdOQi7bM80a27fEbJIuEYGl2U=";
+    rev = "fd16c379ff4880bdf7677b742a9375ca7014c07e";
+    hash = "sha256-Yjm0OmFA3OnZV3irYxLP+KaeqOhY05fSUUlOx6CTFuw=";
     fetchSubmodules = true;
   };
 
-  patches = [
-    ./patches/use-packaged-dxc.patch
-  ];
+  postPatch = ''
+    substituteInPlace CMakeLists.txt \
+      --replace-fail "set (DXC " "#"
+    substituteInPlace lib/rt64/CMakeLists.txt \
+      --replace-fail "set (DXC " "#"
+  '';
 
   nativeBuildInputs = with pkgs; [
     makeWrapper
@@ -52,6 +56,10 @@ in pkgs.clangStdenv.mkDerivation {
     mainProgram = "Zelda64Recompiled";
     platforms = lib.platforms.linux;
   };
+
+  cmakeFlags = [
+    (lib.cmakeFeature "DXC" "dxc")
+  ];
 
   preConfigure = ''
     ln -s "${n64recomp}/bin/N64Recomp" .
