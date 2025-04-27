@@ -1,66 +1,64 @@
 {
-	fetchFromGitHub,
-	libGL,
-	pkg-config,
-	python3,
-	SDL2,
-	stdenv,
-	zlib,
+  cmake,
+  fetchFromGitHub,
+  lib,
+  libGL,
+  ninja,
+  pkg-config,
+  python3,
+  SDL2,
+  stdenv,
+  zlib,
 }:
 
 let
-	bundle = "io.github.fgsfdsfgs.perfect_dark";
+  bundle = "io.github.fgsfdsfgs.perfect_dark";
 in stdenv.mkDerivation (finalAttrs: {
-	pname = "perfect-dark";
-	version = "1.0-unstable-2024-09-02";
+  pname = "perfect-dark";
+  version = "0-unstable-2025-03-30";
 
-	src = fetchFromGitHub {
-		owner = "fgsfdsfgs";
-		repo = "perfect_dark";
-		rev = "2a5c3a351eeb1772306567969fb8dc5b31eaf34e"; 
-		hash = "sha256-tpAzpIe2NYUtIY3NsvGl9liOuNb4YQCcfs+oLkFpFQA=";
-	};
+  src = fetchFromGitHub {
+    owner = "fgsfdsfgs";
+    repo = "perfect_dark";
+    rev = "0ac5fdd5c3ffc13b453e52dceef6beb219606cc3"; 
+    hash = "sha256-+d4N6A00nVViQlzjOq5Ey6aUOQHEhWJhOY8FmIuTkHo=";
+  };
 
-	patches = [
-		./patches/remove-git-usage.patch
-	];
+  nativeBuildInputs = [
+    cmake
+    ninja
+    pkg-config
+    python3
+  ];
 
-	nativeBuildInputs = [
-		pkg-config
-		python3
-	];
+  buildInputs = [
+    SDL2
+    libGL
+    zlib
+  ];
 
-	buildInputs = [
-		SDL2
-		libGL
-		zlib
-	];
+  postPatch = ''
+    patchShebangs --build tools
+    substituteInPlace dist/linux/${bundle}.desktop \
+    --replace-fail ${bundle}.sh $out/bin/perfect-dark
+  '';
 
-	enableParallelBuilding = true;
-	hardeningDisable = [ "format" ];
-	postPatch = ''
-		patchShebangs --build .
-		substituteInPlace dist/linux/${bundle}.desktop \
-			--replace-fail pd perfect-dark
-	'';
+  hardeningDisable = [ "format" ];
 
-	makefile = "Makefile.port";
-	makeFlags = [
-		"GCC_OPT_LVL=-O2"
-		"VERSION_HASH=${builtins.substring 0 8 finalAttrs.src.rev}"
-		"VERSION_BRANCH=port"
-	];
+  installPhase = ''
+    runHook preInstall
+    install -Dm755 pd.* "$out/bin/perfect-dark"
+    runHook postInstall
+  '';
 
-	installPhase = ''
-		runHook preInstall
-		install -Dm755 build/ntsc-final-port/pd.exe "$out/bin/perfect-dark"
-		install -Dm644 dist/linux/${bundle}.desktop "$out/share/applications/${bundle}.desktop"
-		install -Dm644 dist/linux/${bundle}.png $out/share/icons/hicolor/256x256/apps/${bundle}.png
-		runHook postInstall
-	'';
+  postInstall = lib.optionalString (!stdenv.hostPlatform.isDarwin) ''
+    install -Dm644 ../dist/linux/${bundle}.desktop -t $out/share/applications/
+    install -Dm644 ../dist/linux/${bundle}.png $out/share/icons/hicolor/256x256/apps/${bundle}.png
+    install -Dm644 ../dist/linux/${bundle}.metainfo.xml -t $out/share/metainfo/
+  '';
 
-	meta = {
-		description = "work in progress port of n64decomp/perfect_dark to modern platforms";
-		mainProgram = "perfect-dark";
-	};
+  meta = {
+    description = "work in progress port of n64decomp/perfect_dark to modern platforms";
+    mainProgram = "perfect-dark";
+  };
 })

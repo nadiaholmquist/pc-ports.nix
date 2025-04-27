@@ -7,11 +7,9 @@
     systems.flake = false;
     systems-linux.url = "github:nix-systems/default-linux";
     systems-linux.flake = false;
-    systems-x86_64-linux.url = "github:nix-systems/x86_64-linux";
-    systems-x86_64-linux.flake = false;
   };
 
-  outputs = { self, systems, systems-linux, systems-x86_64-linux, ... } @inputs: let
+  outputs = { self, systems, systems-linux, ... } @inputs: let
     helpers = import ./lib/helpers.nix { inherit inputs; };
     inherit (helpers) mkPackages mkApps;
   in {
@@ -39,6 +37,9 @@
           zelda3 = callPackage ./pkgs/snesrev/zelda3.nix {};
           smw = callPackage ./pkgs/snesrev/smw.nix {};
           sm = callPackage ./pkgs/snesrev/sm.nix {};
+
+          # Perfect Dark
+          perfect-dark = pkgs.callPackage ./pkgs/perfect-dark {};
         };
       }
       {
@@ -48,13 +49,6 @@
           zelda64recompiled = pkgs.callPackage ./pkgs/zelda64recompiled {
             inherit (self.packages."${system}") z64decompress n64recomp;
           };
-        };
-      }
-      {
-        systems = import systems-x86_64-linux;
-        packages = { pkgs, ... }: {
-          # Perfect Dark
-          perfect-dark = pkgs.pkgsi686Linux.callPackage ./pkgs/perfect-dark {};
         };
       }
     ];
