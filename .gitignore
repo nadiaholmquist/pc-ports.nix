@@ -1,3 +1,5 @@
 *.z64
 *.sfc
 *.smc
+roms/
+result

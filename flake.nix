@@ -54,7 +54,7 @@
         systems = import systems-x86_64-linux;
         packages = { pkgs, ... }: {
           # Perfect Dark
-          perfect-dark = pkgs.callPackage ./pkgs/perfect-dark {};
+          perfect-dark = pkgs.pkgsi686Linux.callPackage ./pkgs/perfect-dark {};
         };
       }
     ];

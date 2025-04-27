@@ -1,14 +1,23 @@
 {
-  pkgs,
+  djgpp,
+  fetchFromGitHub,
+  gccStdenv,
+  glew,
+  hexdump,
   lib,
+  libGL,
+  pkg-config,
+  python3,
+  requireFile,
+  SDL2,
+
   baseRom ? "us",
   enable60fps ? true,
-  ...
 }:
 
 let
-  inherit (lib) optional optionalString;
-  inherit (pkgs.gccStdenv) isDarwin;
+  inherit (lib) optional;
+  inherit (gccStdenv) isDarwin;
 
   romFile = {
     us = {
@@ -30,7 +39,7 @@ let
     #};
   }."${baseRom}";
 
-  rom = pkgs.requireFile rec {
+  rom = requireFile rec {
     name = "sm64.${baseRom}.z64";
     message = ''
       A Super Mario 64 ${romFile.name} ROM is required to build this package."
@@ -41,30 +50,30 @@ let
     '';
     hash = romFile.hash;
   };
-in pkgs.gccStdenv.mkDerivation {
+
+in gccStdenv.mkDerivation {
   pname = "sm64ex-${baseRom}";
   version = "nightly-2024-07-03";
 
-  src = pkgs.fetchFromGitHub {
+  src = fetchFromGitHub {
     owner = "sm64pc";
     repo = "sm64ex";
     rev = "20bb444562aa1dba79cf6adcb5da632ba580eec3";
     hash = "sha256-nw+F0upTetLqib5r5QxmcOauSJccpTydV3soXz9CHLQ";
   };
 
-  nativeBuildInputs = with pkgs; [
-    gnumake
+  nativeBuildInputs = [
     python3
     hexdump
-  ] ++ optional isDarwin (with pkgs; [
+  ] ++ optional isDarwin [
     pkg-config
     djgpp
-  ]);
+  ];
 
-  buildInputs = (with pkgs; [
+  buildInputs = [
     libGL
     SDL2
-  ]) ++ optional isDarwin pkgs.glew.dev;
+  ] ++ optional isDarwin glew.dev;
 
   patches = optional enable60fps [
     "enhancements/60fps_ex.patch"

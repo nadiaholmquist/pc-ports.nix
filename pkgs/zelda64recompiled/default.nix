@@ -1,7 +1,26 @@
-{ pkgs, lib, z64decompress, n64recomp, ... }:
+{
+  clangStdenv,
+  cmake,
+  directx-shader-compiler,
+  fetchFromGitHub,
+  gtk3,
+  lib,
+  lld,
+  llvmPackages,
+  makeWrapper,
+  n64recomp,
+  ninja,
+  pkg-config,
+  requireFile,
+  runCommandNoCC,
+  SDL2,
+  vulkan-loader,
+  wrapGAppsHook3,
+  z64decompress,
+}:
 
 let
-  rom = pkgs.requireFile rec {
+  rom = requireFile rec {
     name = "mm.us.rev1.z64";
     message = ''
       A Majora's Mask US ROM is required to build. Dump your ROM and run the following to add it to the Nix store:
@@ -12,15 +31,15 @@ let
     hash = "sha256-77E2WzrjYmBFFMD5oaLRH13IaIulvmYKN96/XjvkPys=";
   };
 
-  decompressedRom = pkgs.runCommandNoCC "rom-uncompressed"
+  decompressedRom = runCommandNoCC "rom-uncompressed"
     { nativeBuildInputs = [z64decompress]; }
     "z64decompress ${rom} $out";
 
-in pkgs.clangStdenv.mkDerivation {
+in clangStdenv.mkDerivation {
   pname = "zelda64recompiled";
   version = "1.1.1-unstable-2025-04-24";
 
-  src = pkgs.fetchFromGitHub {
+  src = fetchFromGitHub {
     owner = "Zelda64Recomp";
     repo = "Zelda64Recomp";
     rev = "8ec7b282e36d06715e59c4cd03d83c255b4694cb";
@@ -35,7 +54,7 @@ in pkgs.clangStdenv.mkDerivation {
       --replace-fail "set (DXC " "#"
   '';
 
-  nativeBuildInputs = with pkgs; [
+  nativeBuildInputs = [
     makeWrapper
     lld
     cmake
@@ -45,17 +64,11 @@ in pkgs.clangStdenv.mkDerivation {
     wrapGAppsHook3
   ];
 
-  buildInputs = with pkgs; [
+  buildInputs = [
     gtk3
     SDL2
     vulkan-loader
   ];
-
-  meta = {
-    description = "Zelda 64: Recompiled game";
-    mainProgram = "Zelda64Recompiled";
-    platforms = lib.platforms.linux;
-  };
 
   cmakeFlags = [
     (lib.cmakeFeature "DXC" "dxc")
@@ -73,7 +86,7 @@ in pkgs.clangStdenv.mkDerivation {
   preBuild = ''
     # We need to build patches with unwrapped clang
     # because the parameters passed by NixOS's wrapped clang are incompatible with cross compiling
-    make -C ../patches CC="${pkgs.llvmPackages.clang.cc}/bin/clang" LD=ld.lld
+    make -C ../patches CC="${llvmPackages.clang.cc}/bin/clang" LD=ld.lld
   '';
 
   installPhase = ''
@@ -89,7 +102,13 @@ in pkgs.clangStdenv.mkDerivation {
   preFixup = ''
     gappsWrapperArgs+=(
       --chdir "$out/share/Zelda64Recompiled"
-      --prefix LD_LIBRARY_PATH : ${pkgs.vulkan-loader}/lib
+      --prefix LD_LIBRARY_PATH : ${vulkan-loader}/lib
     )
   '';
+
+  meta = {
+    description = "Zelda 64: Recompiled game";
+    mainProgram = "Zelda64Recompiled";
+    platforms = lib.platforms.linux;
+  };
 }

@@ -1,4 +1,8 @@
-{ pkgs, lib, callPackage }:
+{
+  callPackage,
+  lib,
+  stdenv,
+}:
 
 callPackage ./generic.nix {
   pname = "zelda3";
@@ -7,5 +11,5 @@ callPackage ./generic.nix {
   gitRev = "v0.3";
   gitHash = "sha256-jKCLZ8lqvkN6OmYTZtjxXgbeUUnzOtYaeWmc4rCwwF0";
   romHash = "sha256-ZocdZr4ZrSw0ySfWsUzY62/DGBlltuUXyzYfcxYAnPs=";
-  cflags = lib.optionalString pkgs.stdenv.isDarwin "-Wno-error=deprecated-non-prototype";
+  cflags = lib.optionalString stdenv.isDarwin "-Wno-error=deprecated-non-prototype";
 }

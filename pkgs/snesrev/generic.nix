@@ -1,5 +1,10 @@
 {
-  pkgs, callPackage,
+  fetchFromGitHub,
+  python3,
+  SDL2,
+  requireFile,
+  runtimeShell,
+  stdenv,
 
   pname, version,
   gitRev, gitHash, romHash,
@@ -13,7 +18,7 @@
 }:
 
 let
-  rom = pkgs.requireFile {
+  rom = requireFile {
     name = "${pname}.sfc";
     message = ''
       The ROM "${pname}.sfc" is required to build this package.
@@ -29,26 +34,26 @@ let
   else
     "ln -sf OUT/share/${pname}/${pname}_assets.dat \"$conf/\"";
 
-in pkgs.stdenv.mkDerivation rec {
+in stdenv.mkDerivation rec {
   inherit pname version;
 
-  src = (pkgs.fetchFromGitHub {
+  src = fetchFromGitHub {
     owner = "snesrev";
     repo = pname;
     rev = gitRev;
     hash = gitHash;
-  });
+  };
 
   enableParallelBuilding = true;
 
-  nativeBuildInputs = with pkgs; [
+  nativeBuildInputs = [
     (python3.withPackages (py: [
       py.pyyaml
       py.pillow
     ]))
   ];
 
-  buildInputs = with pkgs; [
+  buildInputs = [
     SDL2
   ];
 
@@ -69,7 +74,7 @@ in pkgs.stdenv.mkDerivation rec {
     install -Dm755 ${pname} "$out/bin/.${pname}-wrapped"
     install -Dm644 ${pname}.ini -t "$out/share/${pname}"
     sed "s|OUT|$out|g" > "$out/bin/${binName}" <<'EOF'
-    #!${pkgs.runtimeShell}
+    #!${runtimeShell}
     conf="$HOME/.config/${pname}"
     mkdir -p "$conf"
     cp -n "OUT/share/${pname}/${pname}.ini" "$conf/"

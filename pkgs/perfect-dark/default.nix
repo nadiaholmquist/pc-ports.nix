@@ -1,12 +1,20 @@
-{ pkgs, ... }:
+{
+	fetchFromGitHub,
+	libGL,
+	pkg-config,
+	python3,
+	SDL2,
+	stdenv,
+	zlib,
+}:
 
 let
 	bundle = "io.github.fgsfdsfgs.perfect_dark";
-in pkgs.pkgsi686Linux.stdenv.mkDerivation (finalAttrs: {
+in stdenv.mkDerivation (finalAttrs: {
 	pname = "perfect-dark";
 	version = "1.0-unstable-2024-09-02";
 
-	src = pkgs.fetchFromGitHub {
+	src = fetchFromGitHub {
 		owner = "fgsfdsfgs";
 		repo = "perfect_dark";
 		rev = "2a5c3a351eeb1772306567969fb8dc5b31eaf34e"; 
@@ -17,13 +25,12 @@ in pkgs.pkgsi686Linux.stdenv.mkDerivation (finalAttrs: {
 		./patches/remove-git-usage.patch
 	];
 
-	nativeBuildInputs = with pkgs; [
-		gnumake
+	nativeBuildInputs = [
 		pkg-config
 		python3
 	];
 
-	buildInputs = with pkgs.pkgsi686Linux; [
+	buildInputs = [
 		SDL2
 		libGL
 		zlib
