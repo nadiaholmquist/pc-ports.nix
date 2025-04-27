@@ -32,7 +32,7 @@
           # Super Mario 64 PC port
           sm64ex = sm64ex-us;
           sm64ex-us = callPackage ./pkgs/sm64ex { baseRom = "us"; };
-          sm64ex-eu = callPackage ./pkgs/sm64ex { baseRom = "eu"; };
+          #sm64ex-eu = callPackage ./pkgs/sm64ex { baseRom = "eu"; };
           sm64ex-jp = callPackage ./pkgs/sm64ex { baseRom = "jp"; };
 
           # Zelda 3
