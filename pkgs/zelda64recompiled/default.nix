@@ -18,13 +18,13 @@ let
 
 in pkgs.clangStdenv.mkDerivation {
   pname = "zelda64recompiled";
-  version = "1.1.1-unstable-2025-03-25";
+  version = "1.1.1-unstable-2025-04-24";
 
   src = pkgs.fetchFromGitHub {
     owner = "Zelda64Recomp";
     repo = "Zelda64Recomp";
-    rev = "fd16c379ff4880bdf7677b742a9375ca7014c07e";
-    hash = "sha256-Yjm0OmFA3OnZV3irYxLP+KaeqOhY05fSUUlOx6CTFuw=";
+    rev = "8ec7b282e36d06715e59c4cd03d83c255b4694cb";
+    hash = "sha256-S1U6kE8SakEOYMJpciJrCCJG6EkKvN8IhoOiEflhAc4=";
     fetchSubmodules = true;
   };
 
