@@ -37,13 +37,13 @@ let
 
 in clangStdenv.mkDerivation {
   pname = "zelda64recompiled";
-  version = "1.1.1-unstable-2025-04-24";
+  version = "1.1.1-unstable-2025-04-29";
 
   src = fetchFromGitHub {
     owner = "Zelda64Recomp";
     repo = "Zelda64Recomp";
-    rev = "8ec7b282e36d06715e59c4cd03d83c255b4694cb";
-    hash = "sha256-S1U6kE8SakEOYMJpciJrCCJG6EkKvN8IhoOiEflhAc4=";
+    rev = "14f92c41ab116725d14783a3bbd8e53a9cc8e933";
+    hash = "sha256-CBD3WMNt/0TZf2e6ku87rr1v2C1ewOOLGxnajGv22bU=";
     fetchSubmodules = true;
   };
 
