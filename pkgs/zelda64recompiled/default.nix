@@ -37,7 +37,7 @@ let
 
 in clangStdenv.mkDerivation {
   pname = "zelda64recompiled";
-  version = "1.1.1-unstable-2025-04-29";
+  version = "1.2.0";
 
   src = fetchFromGitHub {
     owner = "Zelda64Recomp";
