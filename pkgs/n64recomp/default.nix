@@ -23,11 +23,9 @@ stdenv.mkDerivation {
     ninja
   ];
 
-  buildFlags = ["N64RecompCLI" "RSPRecomp"];
-
   installPhase = ''
-    install -Dm755 N64Recomp $out/bin/N64Recomp
-    install -Dm755 RSPRecomp $out/bin/RSPRecomp
+    find . -maxdepth 1 -type f -executable \
+      -exec install -Dm755 "{}" -t $out/bin \;
   '';
 
   passthru.updateScript = unstableGitUpdater {};
