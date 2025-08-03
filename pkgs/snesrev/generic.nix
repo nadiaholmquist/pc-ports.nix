@@ -80,7 +80,7 @@ in stdenv.mkDerivation rec {
     cp -n "OUT/share/${pname}/${pname}.ini" "$conf/"
     ${linkAssets}
     cd "$conf"
-    exec OUT/bin/.${pname}-wrapped
+    exec OUT/bin/.${pname}-wrapped "$@"
     EOF
     chmod +x "$out/bin/${binName}"
     runHook postInstall

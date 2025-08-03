@@ -37,6 +37,7 @@
           zelda3 = callPackage ./pkgs/snesrev/zelda3.nix {};
           smw = callPackage ./pkgs/snesrev/smw.nix {};
           sm = callPackage ./pkgs/snesrev/sm.nix {};
+          smb1 = callPackage ./pkgs/snesrev/smb1.nix { inherit smw; };
 
           # Perfect Dark
           perfect-dark = pkgs.callPackage ./pkgs/perfect-dark {};
