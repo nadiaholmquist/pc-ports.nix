@@ -50,6 +50,9 @@
           zelda64recompiled = pkgs.callPackage ./pkgs/zelda64recompiled {
             inherit (self.packages."${system}") z64decompress n64recomp;
           };
+          mariokart64recompiled = pkgs.callPackage ./pkgs/mariokart64recompiled {
+            inherit (self.packages."${system}") n64recomp;
+          };
         };
       }
     ];
