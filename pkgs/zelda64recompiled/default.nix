@@ -13,7 +13,7 @@
   pkg-config,
   requireFile,
   runCommandNoCC,
-  SDL2_classic,
+  sdl2-compat,
   vulkan-loader,
   wrapGAppsHook3,
   z64decompress,
@@ -66,7 +66,7 @@ in clangStdenv.mkDerivation {
 
   buildInputs = [
     gtk3
-    SDL2_classic
+    sdl2-compat
     vulkan-loader
   ];
 
