@@ -1,5 +1,5 @@
 {
-  clangStdenv,
+  clang19Stdenv,
   cmake,
   directx-shader-compiler,
   fetchFromGitHub,
@@ -29,7 +29,7 @@ let
     hash = "sha256-1rhTjdY/ATLssoVufTKBbtPDDj5HmuzSPPg/troXpdo=";
   };
 
-in clangStdenv.mkDerivation {
+in clang19Stdenv.mkDerivation {
   pname = "mariokart64recompiled";
   version = "0.9.1";
 
@@ -76,6 +76,7 @@ in clangStdenv.mkDerivation {
 
   cmakeFlags = [
     (lib.cmakeFeature "DXC" "dxc")
+    (lib.cmakeFeature "CMAKE_POLICY_VERSION_MINIMUM" "3.5")
   ];
 
   preConfigure = ''

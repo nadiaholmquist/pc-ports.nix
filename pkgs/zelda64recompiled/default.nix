@@ -1,5 +1,5 @@
 {
-  clangStdenv,
+  clang19Stdenv,
   cmake,
   directx-shader-compiler,
   fetchFromGitHub,
@@ -35,7 +35,7 @@ let
     { nativeBuildInputs = [z64decompress]; }
     "z64decompress ${rom} $out";
 
-in clangStdenv.mkDerivation {
+in clang19Stdenv.mkDerivation {
   pname = "zelda64recompiled";
   version = "1.2.2";
 
@@ -72,6 +72,7 @@ in clangStdenv.mkDerivation {
 
   cmakeFlags = [
     (lib.cmakeFeature "DXC" "dxc")
+    (lib.cmakeFeature "CMAKE_POLICY_VERSION_MINIMUM" "3.5")
   ];
 
   preConfigure = ''
