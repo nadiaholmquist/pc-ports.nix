@@ -11,17 +11,18 @@
   SDL2,
   stdenv,
   wafHook,
+  xorg,
 }:
 
 stdenv.mkDerivation {
   pname = "xash3d-fwgs";
-  version = "0-unstable-2025-03-02";
+  version = "0-unstable-2025-11-16";
 
   src = fetchFromGitHub {
     owner = "FWGS";
     repo = "xash3d-fwgs";
-    rev = "3b51a554dd9764961eff04a9705fbc007807dc85";
-    hash = "sha256-lhuQYa4DdYu7XeBkmIt1VGFLM3/TnFSOBjP+0+L1qfs=";
+    rev = "1b28d183fca69c289d627c83eeb25d0b07154a9a";
+    hash = "sha256-shOS2VNkLlqtgRbaqQu+34PhzKY8OaW7v/xrtEa9yjQ=";
     fetchSubmodules = true;
   };
 
@@ -37,6 +38,7 @@ stdenv.mkDerivation {
     freetype
     fontconfig
     hlsdk-portable
+    xorg.libX11
   ];
 
   # HACK: Remove macOS-specific handling of SDL2 in waf
