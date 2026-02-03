@@ -57,7 +57,7 @@ in stdenv.mkDerivation rec {
     SDL2
   ];
 
-  env.NIX_CFLAGS_COMPILE = cflags;
+  env.NIX_CFLAGS_COMPILE = "-std=c11 " + cflags;
 
   prePatch = ''
     substituteInPlace Makefile \

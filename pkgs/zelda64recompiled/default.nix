@@ -12,7 +12,7 @@
   ninja,
   pkg-config,
   requireFile,
-  runCommandNoCC,
+  runCommand,
   sdl2-compat,
   vulkan-loader,
   wrapGAppsHook3,
@@ -31,7 +31,7 @@ let
     hash = "sha256-77E2WzrjYmBFFMD5oaLRH13IaIulvmYKN96/XjvkPys=";
   };
 
-  decompressedRom = runCommandNoCC "rom-uncompressed"
+  decompressedRom = runCommand "rom-uncompressed"
     { nativeBuildInputs = [z64decompress]; }
     "z64decompress ${rom} $out";
 
