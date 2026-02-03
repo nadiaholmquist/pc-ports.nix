@@ -15,13 +15,13 @@ let
   bundle = "io.github.fgsfdsfgs.perfect_dark";
 in stdenv.mkDerivation (finalAttrs: {
   pname = "perfect-dark";
-  version = "0-unstable-2025-03-30";
+  version = "0-unstable-2026-01-07";
 
   src = fetchFromGitHub {
     owner = "fgsfdsfgs";
     repo = "perfect_dark";
-    rev = "0ac5fdd5c3ffc13b453e52dceef6beb219606cc3"; 
-    hash = "sha256-+d4N6A00nVViQlzjOq5Ey6aUOQHEhWJhOY8FmIuTkHo=";
+    rev = "246d737663c3eae4c1cfdc0cb32f92b3fd353d8a"; 
+    hash = "sha256-lLc/r86X+5h/CJDs1+Uaeajyd2k6QO9YAhvX2M/yOrU=";
   };
 
   nativeBuildInputs = [
