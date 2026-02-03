@@ -53,6 +53,9 @@
           mariokart64recompiled = pkgs.callPackage ./pkgs/mariokart64recompiled {
             inherit (self.packages."${system}") n64recomp;
           };
+          banjorecomp = pkgs.callPackage ./pkgs/banjorecomp {
+            inherit (self.packages."${system}") n64recomp;
+          };
         };
       }
     ];
